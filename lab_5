@@ -1,1 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lab 5</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .conatiner{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+fieldset{
+    background-color: bisque;
+    border-radius: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 30vh;
+    width: 30vw;
+}
+input{
+    border-radius: 10px;
+    width: 20vw;
+}
+#submit{
+    background-color: rgb(81, 255, 81);
+}
+    </style>
 
+</head>
+<body>
+    <div class="conatiner">
+        <form action="code.php" method="POST">
+            <fieldset>
+                <input type="text" name="uname" id="in2" placeholder="Enter Username" required><br><br>
+                <input type="password" name="pass" id="in1"placeholder="Enter Password" required><br><br>
+                <button type="submit" id="submit">Submit</button>
+            </fieldset>
+        </form>
+        
+    </div>
+
+
+
+    <?php
+    <?php
+    $host = "localhost";
+    $user = "root";
+    $password = "";
+    $db = "test"; 
+    
+    $con = mysqli_connect($host, $user, $password, $db);
+    
+    if (!$con) {
+        die("Connection failed: " . mysqli_connect_error());
+    } else {
+        echo "Connection successful<br>";
+    }
+    
+    
+    if (isset($_POST['uname']) && isset($_POST['pass'])) {
+        $un = $_POST['uname'];
+        $pass = $_POST['pass'];
+    
+        $createTableSQL = "
+            CREATE TABLE IF NOT EXISTS info (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(100) NOT NULL,
+                password VARCHAR(255) NOT NULL
+            );
+        ";
+        mysqli_query($con, $createTableSQL);
+    
+        $stmt = $con->prepare("INSERT INTO info (username, password) VALUES (?, ?)");
+        $stmt->bind_param("ss", $un, $pass);
+    
+        if ($stmt->execute()) {
+            echo "Submission successful";
+        } else {
+            echo "Submission failed: " . $stmt->error;
+        }
+    
+        $stmt->close();
+    } else {
+        echo "Username or password not received!";
+    }
+    
+    $con->close();
+    ?>
+    
+        ?>
+    
+</body>
+</html>
