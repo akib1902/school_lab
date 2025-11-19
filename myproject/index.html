@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Practice</title>
+    <link rel="stylesheet" href="registration.css">
+</head>
+<body>
+    <h2>Registration Form</h2>
+    <form action="code.php" autocomplete="on" method="post" id="form1" novalidate>
+        <fieldset>
+            <label for="uname">Username</label>
+            <input type="text" name="uname" id="uname" placeholder="Enter Your Username" autofocus required>
+            <span id="euname" class="error"></span>
+
+            <label for="fname">First Name</label>
+            <input type="text" name="fname" id="fname" placeholder="Enter Your First Name" required>
+            <span id="efname" class="error"></span>
+
+            <label for="lname">Last Name</label>
+            <input type="text" name="lname" id="lname" placeholder="Enter Your Last Name" required>
+            <span id="elname" class="error"></span>
+
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" placeholder="Enter Your Email Address" required>
+            <span id="eemail" class="error"></span>
+
+            <label for="phnum">Mobile Number</label>
+            <input type="tel" name="phnum" id="phnum" placeholder="Enter Your Mobile Number" required>
+            <span id="ephone" class="error"></span>
+
+            <label for="pass">Password</label>
+            <input type="password" name="pass" id="pass" placeholder="Enter a Password" required>
+            <span id="ec" class="error"></span><br>
+            <span id="el" class="error"></span><br>
+            <span id="ed" class="error"></span><br>
+            <span id="es" class="error"></span><br>
+
+            <input type="submit" value="Register">
+        </fieldset>
+    </form>
+
+    <script src="script.js"></script>
+</body>
+</html>
