@@ -1,0 +1,205 @@
+/* Global base (if this file loads after nav.css, it will just complement it) */
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+/* Main container */
+.container {
+    margin: 24px auto;
+    padding: 16px;
+    max-width: 1100px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    animation: fadeIn 0.7s ease-out;
+}
+
+/* Cards */
+.card {
+    width: 100%;
+    min-width: 300px;
+    margin: 8px 0;
+    padding: 20px;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow:
+        0 10px 25px rgba(15, 118, 110, 0.05),
+        0 0 0 1px rgba(15, 118, 110, 0.03);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+    animation: cardPop 0.4s ease-out;
+}
+
+/* Hover effect on card */
+.card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow:
+        0 16px 30px rgba(15, 118, 110, 0.12),
+        0 0 0 1px rgba(15, 118, 110, 0.06);
+    background: linear-gradient(135deg, #ffffff, #f0fff4);
+}
+
+/* Form wrapper */
+#form {
+    width: 100%;
+    margin: 8px 0;
+    padding: 20px;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow:
+        0 10px 25px rgba(96, 165, 250, 0.06),
+        0 0 0 1px rgba(96, 165, 250, 0.05);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    animation: cardPop 0.45s ease-out;
+}
+
+#form:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 16px 32px rgba(96, 165, 250, 0.18),
+        0 0 0 1px rgba(96, 165, 250, 0.08);
+}
+
+/* Form heading spacing if any */
+#form h2,
+#form h3 {
+    margin-bottom: 12px;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(148, 163, 184, 0.2);
+}
+
+table,
+tr,
+th,
+td {
+    border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+th,
+td {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+}
+
+/* Header row */
+th {
+    background: linear-gradient(135deg, #0ea5e9, #22c55e);
+    color: #ffffff;
+    text-align: left;
+    font-weight: 600;
+}
+
+/* Zebra-striping & hover */
+tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+tr:hover {
+    background-color: #ecfeff;
+    transition: background-color 0.15s ease;
+}
+
+/* Inputs & textarea */
+input,
+textarea {
+    width: 100%;
+    border: 1px solid rgb(226, 232, 240);
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-size: 0.95rem;
+    outline: none;
+    background: #f9fafb;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease,
+        transform 0.15s ease;
+    resize: vertical;
+}
+
+/* Focus state */
+input:focus,
+textarea:focus {
+    border-color: #22c55e;
+    background: #ffffff;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Optional submit button style if inside form */
+button,
+input[type="submit"] {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #ffffff;
+    font-weight: 600;
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 10px 20px rgba(34, 197, 94, 0.35);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+}
+
+button:hover,
+input[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 26px rgba(34, 197, 94, 0.45);
+    filter: brightness(1.02);
+}
+
+button:active,
+input[type="submit"]:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 14px rgba(34, 197, 94, 0.3);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cardPop {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

@@ -1,0 +1,115 @@
+/* Global reset + base font */
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+/* Optional body background to match the UI */
+body {
+    background: radial-gradient(circle at top, #f5fff8 0, #e8f5ff 40%, #f7f7ff 100%);
+    min-height: 100vh;
+}
+
+/* NAVBAR */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 32px;
+    background: linear-gradient(135deg, #0f9d58, #0b8043);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    /* entrance animation */
+    animation: navSlideDown 0.6s ease-out;
+}
+
+/* Logo / Title */
+.nav h1 {
+    color: #ffffff;
+    font-size: 1.4rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Optional logo circle effect before title */
+.nav h1::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+/* Links */
+.nav a {
+    color: #ffffff;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 0.95rem;
+    position: relative;
+    padding-bottom: 2px;
+    opacity: 0.9;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+/* Animated underline on hover */
+.nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 0;
+    height: 2px;
+    border-radius: 999px;
+    background: #ffffff;
+    transform-origin: left;
+    transition: width 0.25s ease;
+}
+
+.nav a:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+.nav a:hover::after {
+    width: 100%;
+}
+
+/* Simple button-style link if you have one with .btn-link */
+.nav a.btn-link {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(6px);
+}
+
+.nav a.btn-link:hover {
+    background: rgba(255, 255, 255, 0.24);
+}
+
+/* NAV animation */
+@keyframes navSlideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+form{
+    display: flex;
+    gap: 15px;
+}
