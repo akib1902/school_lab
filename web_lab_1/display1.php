@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+
     <div class="container">
         <?php while($row = mysqli_fetch_assoc($run)){ ?>
             <div class="card">

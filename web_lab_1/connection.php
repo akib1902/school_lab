@@ -1,5 +1,5 @@
 <?php
 
-    $con = mysqli_connect("localhost", "root", "", "akib");
+    $con = mysqli_connect("localhost", "root", "", "qrora_app");
 
 ?>
