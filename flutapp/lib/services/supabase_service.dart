@@ -12,20 +12,23 @@ class SupabaseService {
     String? department,
     String? batch,
   }) async {
-    try {
-      var query = client
-          .from('courses')
-          .select()
-          .eq('is_active', true);
+    final cacheBox = Hive.box('cacheBox');
 
-      // ⚠️ Your DB doesn't directly store department/batch in courses
-      // You MUST extend schema OR filter via semester later
+  try {
+    final res = await client
+        .from('courses')
+        .select()
+        .eq('is_active', true);
 
-      final res = await query;
-      return List<Map<String, dynamic>>.from(res);
-    } catch (e) {
-      throw Exception("Failed to load courses: $e");
-    }
+    // Save to cache
+    cacheBox.put('courses', res);
+
+    return List<Map<String, dynamic>>.from(res);
+  } catch (e) {
+    // fallback to cache
+    final cached = cacheBox.get('courses', defaultValue: []);
+    return List<Map<String, dynamic>>.from(cached);
+  }
   }
 
   // =========================
@@ -86,27 +89,16 @@ class SupabaseService {
   // 📦 STUDY TOOLS (Resources)
   // =========================
 
-  Future<List<Map<String, dynamic>>> getStudyTools({
-    required String courseId,
-    String? type, // optional filter (syllabus, note, etc.)
-  }) async {
-    try {
-      var query = client
-          .from('study_tools')
-          .select()
-          .eq('course_id', courseId);
+Future<List<Map<String, dynamic>>> getStudyTools({
+  required String courseId,
+}) async {
+  final res = await client
+      .from('study_tools')
+      .select()
+      .eq('course_id', courseId);
 
-      if (type != null) {
-        query = query.eq('type', type);
-      }
-
-      final res = await query.order('created_at', ascending: false);
-
-      return List<Map<String, dynamic>>.from(res);
-    } catch (e) {
-      throw Exception("Failed to load study tools: $e");
-    }
-  }
+  return List<Map<String, dynamic>>.from(res);
+}
 
   // =========================
   // 🔗 FULL COURSE DETAILS (JOIN)
@@ -174,23 +166,12 @@ class SupabaseService {
       throw Exception("Search failed: $e");
     }
   }
-  Future<List<Map<String, dynamic>>> getAllResources() async {
-  final cacheBox = Hive.box('cacheBox');
+Future<List<Map<String, dynamic>>> getAllResources() async {
+  final res = await client
+      .from('study_tools')
+      .select()
+      .order('created_at', ascending: false);
 
-  try {
-    final res = await client
-        .from('study_tools')
-        .select()
-        .order('created_at', ascending: false);
-
-    // cache it
-    cacheBox.put('all_resources', res);
-
-    return List<Map<String, dynamic>>.from(res);
-  } catch (e) {
-    // fallback to cache
-    final cached = cacheBox.get('all_resources', defaultValue: []);
-    return List<Map<String, dynamic>>.from(cached);
-  }
+  return List<Map<String, dynamic>>.from(res);
 }
 }

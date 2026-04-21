@@ -14,6 +14,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (_) {
+            final appState = AppState();
+            appState.loadFromStorage(); // 🔥 IMPORTANT
+            return appState;
+          },
+        ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AppState()),
       ],

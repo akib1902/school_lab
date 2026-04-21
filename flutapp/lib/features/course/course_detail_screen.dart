@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/supabase_service.dart';
+import 'content_viewer_screen.dart';
 
 class CourseDetailScreen extends StatefulWidget {
   final String courseId;
@@ -47,24 +48,54 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                   title: Text(topic['title']),
                   children: [
                     FutureBuilder(
-                      future: service.getSlides(topic['id']),
+                      future: Future.wait([
+                        service.getVideos(topic['id']),
+                        service.getSlides(topic['id']),  //manual 001
+                      ]),
                       builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Padding(
-                            padding: EdgeInsets.all(8),
-                            child: CircularProgressIndicator(),
-                          );
-                        }
+                        if (!snapshot.hasData) return const SizedBox();
 
-                        final slides = snapshot.data as List;
+                        final videos = snapshot.data![0] as List;
+                        final slides = snapshot.data![1] as List;
 
                         return Column(
-                          children: slides.map((slide) {
-                            return ListTile(
-                              title: Text(slide['title']),
-                              trailing: const Icon(Icons.open_in_new),
-                            );
-                          }).toList(),
+                          children: [
+                            ...videos.map((video) {
+                              return ListTile(
+                                title: Text(video['title']),
+                                leading: const Icon(Icons.video_library),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ContentViewerScreen(
+                                        title: video['title'],
+                                        url: video['youtube_url'],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }).toList(),
+
+                            ...slides.map((slide) {
+                              return ListTile(
+                                title: Text(slide['title']),
+                                leading: const Icon(Icons.slideshow),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ContentViewerScreen(
+                                        title: slide['title'],
+                                        url: slide['content_url'], // could be PDF or PPT link
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }).toList(),
+                          ],
                         );
                       },
                     )

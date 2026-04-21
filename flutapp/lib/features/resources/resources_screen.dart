@@ -1,3 +1,4 @@
+import 'package:flutapp/features/course/content_viewer_screen.dart';
 import 'package:flutter/material.dart';
 import '../../services/supabase_service.dart';
 import 'package:provider/provider.dart';
@@ -11,9 +12,9 @@ class ResourcesScreen extends StatefulWidget {
 }
 
 class _ResourcesScreenState extends State<ResourcesScreen> {
-  final service = SupabaseService();
-  List tools = [];
+  List<Map<String, dynamic>> tools = [];  // ✅ STEP 1 (HERE)
   bool loading = true;
+  final service = SupabaseService();
 
   @override
   void initState() {
@@ -24,21 +25,21 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
   Future<void> loadResources() async {
     final appState = context.read<AppState>();
 
-    List data;
+    List<Map<String, dynamic>> data = [];
 
     if (appState.selectedCourse != null) {
       data = await service.getStudyTools(
         courseId: appState.selectedCourse!['id'],
       );
     } else {
-      data = await service.getAllResources(); // ✅ now valid
+      data = await service.getAllResources();
     }
 
     setState(() {
-      tools = data;
+      tools = List<Map<String, dynamic>>.from(data);
       loading = false;
     });
-  }
+  }   
 
   IconData getIcon(String type) {
     switch (type) {
@@ -68,14 +69,35 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
                 const SizedBox(height: 16),
 
                 ...tools.map((tool) {
+                  final Map<String, dynamic> t = Map<String, dynamic>.from(tool);
+
+                  final String title = t['title']?.toString() ?? 'No Title';
+                  final String? url = t['content_url']?.toString();
+
                   return Card(
                     child: ListTile(
-                      leading: Icon(getIcon(tool['type'])),
-                      title: Text(tool['title']),
-                      subtitle: Text(tool['type']),
+                      title: Text(title),
+                      subtitle: Text(t['type']?.toString() ?? ''),
+                      onTap: () {
+                        if (url != null && url.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ContentViewerScreen(
+                                title: title,
+                                url: url,
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("No valid link available")),
+                          );
+                        }
+                      },
                     ),
                   );
-                }).toList()
+                }).toList(),
               ],
             ),
     );

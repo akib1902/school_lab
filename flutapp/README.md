@@ -52,8 +52,9 @@ lib/
 │   │   └── resources_screen.dart
 │   │
 │   └── course/
-│       └── course_detail_screen.dart
-│
+│       ├── course_detail_screen.dart
+│       └── content_viewer_screen.dart
+│ 
 ├── widgets/
 │   ├── dropdown_widget.dart
 │   ├── bottom_navbar.dart
@@ -65,4 +66,17 @@ lib/
 
 
 
-    getAllResources(); not 
+
+this is my flutter project structure. i use supabase database. now it's showing only video from my database. given are table "video" showing title and link so that i can see in content viewer_screen.dart. what changes should i do for course_detail screen so that i can also see from table study tool: title and link to content_url and from table slides title and google_drive_url.
+
+
+
+want to make ai agent. this is my supabase_service.dart, code. and my project database schema. the frontend is ai_screen.dart using hive, make it as you like. 
+Strategy
+Input:
+course code 
+full mark distribution
+Output:
+exam prediction(only from mark distribution topics).
+summary(cheat sheet type text and table to ) 
+and a chatbot will answer by this
