@@ -1,0 +1,324 @@
+#include <GL/glut.h>
+#include <cmath>
+#include <string>
+#include <cstdlib>
+#include <windows.h> // for Beep()
+
+// Window
+int WIDTH = 900;
+int HEIGHT = 600;
+
+// Game State
+enum GameState {
+    PLAYING,
+    GAME_OVER
+};
+GameState gameState = PLAYING;
+
+// Paddle
+float paddleHeight = 100;
+float paddleWidth = 15;
+float leftPaddleY = HEIGHT / 2;
+float rightPaddleY = HEIGHT / 2;
+float paddleSpeed = 8;
+
+// Ball
+float ballX = WIDTH / 2;
+float ballY = HEIGHT / 2;
+float ballSize = 12;
+float ballSpeedX = 6;
+float ballSpeedY = 4;
+
+// Score
+int leftScore = 0;
+int rightScore = 0;
+
+// Timer
+int gameTime = 60;
+int lastTime = 0;
+
+// Input
+bool keys[256] = {false};
+bool specialKeys[256] = {false};
+
+// Power Shot
+bool powerActive = false;
+int powerCooldown = 0;
+
+// Draw Text
+void drawText(float x, float y, std::string text) {
+    glRasterPos2f(x, y);
+    for (char c : text)
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
+}
+
+// Draw Paddle
+void drawPaddle(float x, float y) {
+    glBegin(GL_QUADS);
+    glVertex2f(x, y - paddleHeight / 2);
+    glVertex2f(x + paddleWidth, y - paddleHeight / 2);
+    glVertex2f(x + paddleWidth, y + paddleHeight / 2);
+    glVertex2f(x, y + paddleHeight / 2);
+    glEnd();
+}
+
+// Draw Ball
+void drawBall(float x, float y) {
+    glBegin(GL_POLYGON);
+    for (int i = 0; i < 360; i++) {
+        float theta = i * 3.1416f / 180;
+        glVertex2f(x + cos(theta) * ballSize,
+                   y + sin(theta) * ballSize);
+    }
+    glEnd();
+}
+
+// Reset Ball
+void resetBall(int direction) {
+    ballX = WIDTH / 2;
+    ballY = HEIGHT / 2;
+    ballSpeedX = 6 * direction;
+    ballSpeedY = (rand() % 5) - 2;
+}
+
+// GAME OVER
+void drawGameOver() {
+    glColor3f(0, 0, 0);
+    glBegin(GL_QUADS);
+    glVertex2f(0, 0);
+    glVertex2f(WIDTH, 0);
+    glVertex2f(WIDTH, HEIGHT);
+    glVertex2f(0, HEIGHT);
+    glEnd();
+
+    glColor3f(1, 1, 1);
+    drawText(WIDTH / 2 - 80, HEIGHT / 2 + 40, "GAME OVER");
+
+    std::string result;
+    if (leftScore > rightScore)
+        result = "LEFT PLAYER WINS";
+    else if (rightScore > leftScore)
+        result = "RIGHT PLAYER WINS";
+    else
+        result = "DRAW";
+
+    drawText(WIDTH / 2 - 120, HEIGHT / 2, result);
+    drawText(WIDTH / 2 - 140, HEIGHT / 2 - 60, "Press R to Restart");
+}
+
+// UPDATE
+void update() {
+
+    int currentTime = glutGet(GLUT_ELAPSED_TIME) / 1000;
+
+    if (gameState == PLAYING) {
+
+        // Timer
+        if (currentTime != lastTime) {
+            gameTime--;
+            lastTime = currentTime;
+        }
+
+        if (gameTime <= 0) {
+            gameState = GAME_OVER;
+            return;
+        }
+
+        // Cooldown
+        if (powerCooldown > 0)
+            powerCooldown--;
+
+        // Movement
+        if (keys['w'] && leftPaddleY < HEIGHT)
+            leftPaddleY += paddleSpeed;
+        if (keys['s'] && leftPaddleY > 0)
+            leftPaddleY -= paddleSpeed;
+
+        if (specialKeys[GLUT_KEY_UP] && rightPaddleY < HEIGHT)
+            rightPaddleY += paddleSpeed;
+        if (specialKeys[GLUT_KEY_DOWN] && rightPaddleY > 0)
+            rightPaddleY -= paddleSpeed;
+
+        // Move Ball
+        ballX += ballSpeedX;
+        ballY += ballSpeedY;
+
+        // Wall
+        if (ballY >= HEIGHT || ballY <= 0)
+            ballSpeedY *= -1;
+
+        // Left Paddle
+        if (ballX <= 30 &&
+            ballY >= leftPaddleY - paddleHeight / 2 &&
+            ballY <= leftPaddleY + paddleHeight / 2) {
+
+            ballSpeedX *= -1.1;
+            float offset = (ballY - leftPaddleY) / (paddleHeight / 2);
+            ballSpeedY = offset * 6;
+            Beep(800, 50);
+        }
+
+        // Right Paddle
+        if (ballX >= WIDTH - 30 &&
+            ballY >= rightPaddleY - paddleHeight / 2 &&
+            ballY <= rightPaddleY + paddleHeight / 2) {
+
+            ballSpeedX *= -1.1;
+            float offset = (ballY - rightPaddleY) / (paddleHeight / 2);
+            ballSpeedY = offset * 6;
+            Beep(900, 50);
+        }
+
+        // Score
+        if (ballX < 0) {
+            rightScore++;
+            Beep(400, 200);
+            resetBall(1);
+        }
+
+        if (ballX > WIDTH) {
+            leftScore++;
+            Beep(400, 200);
+            resetBall(-1);
+        }
+    }
+
+    glutPostRedisplay();
+}
+
+// DISPLAY
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    if (gameState == GAME_OVER) {
+        drawGameOver();
+        glutSwapBuffers();
+        return;
+    }
+
+    // Background
+    glColor3f(0.05f, 0.05f, 0.08f);
+    glBegin(GL_QUADS);
+    glVertex2f(0, 0);
+    glVertex2f(WIDTH, 0);
+    glVertex2f(WIDTH, HEIGHT);
+    glVertex2f(0, HEIGHT);
+    glEnd();
+
+    // Middle line
+    glColor3f(1, 1, 1);
+    for (int i = 0; i < HEIGHT; i += 20) {
+        glBegin(GL_QUADS);
+        glVertex2f(WIDTH / 2 - 2, i);
+        glVertex2f(WIDTH / 2 + 2, i);
+        glVertex2f(WIDTH / 2 + 2, i + 10);
+        glVertex2f(WIDTH / 2 - 2, i + 10);
+        glEnd();
+    }
+
+    // Paddles
+    glColor3f(0.2f, 0.8f, 1.0f);
+    drawPaddle(20, leftPaddleY);
+
+    glColor3f(1.0f, 0.3f, 0.3f);
+    drawPaddle(WIDTH - 35, rightPaddleY);
+
+    // Ball (glow if power active)
+    if (powerActive)
+        glColor3f(1, 0.5f, 0);
+    else
+        glColor3f(1, 1, 0.2f);
+
+    drawBall(ballX, ballY);
+
+    // Score
+    glColor3f(1, 1, 1);
+    drawText(WIDTH / 4, HEIGHT - 40, std::to_string(leftScore));
+    drawText(3 * WIDTH / 4, HEIGHT - 40, std::to_string(rightScore));
+
+    // Timer
+    drawText(WIDTH / 2 - 10, HEIGHT - 40, std::to_string(gameTime));
+
+    glutSwapBuffers();
+}
+
+// INPUT
+void keyDown(unsigned char key, int x, int y) {
+    keys[key] = true;
+
+    // Power shot (Player 1)
+    if (key == 'd' && powerCooldown == 0) {
+        ballSpeedX *= 1.5;
+        ballSpeedY *= 1.5;
+        powerActive = true;
+        powerCooldown = 60;
+        Beep(1200, 100);
+    }
+
+    // Restart
+    if (gameState == GAME_OVER && (key == 'r' || key == 'R')) {
+        leftScore = 0;
+        rightScore = 0;
+        gameTime = 60;
+        gameState = PLAYING;
+        resetBall((rand() % 2 == 0) ? 1 : -1);
+    }
+}
+
+void keyUp(unsigned char key, int x, int y) {
+    keys[key] = false;
+}
+
+void specialDown(int key, int x, int y) {
+    specialKeys[key] = true;
+
+    // Power shot (Player 2)
+    if (key == GLUT_KEY_LEFT && powerCooldown == 0) {
+        ballSpeedX *= 1.5;
+        ballSpeedY *= 1.5;
+        powerActive = true;
+        powerCooldown = 60;
+        Beep(1300, 100);
+    }
+}
+
+void specialUp(int key, int x, int y) {
+    specialKeys[key] = false;
+}
+
+// INIT
+void init() {
+    glClearColor(0, 0, 0, 1);
+    glMatrixMode(GL_PROJECTION);
+    gluOrtho2D(0, WIDTH, 0, HEIGHT);
+}
+
+// TIMER LOOP
+void timer(int) {
+    update();
+
+    // reset power visual
+    powerActive = false;
+
+    glutTimerFunc(16, timer, 0);
+}
+
+// MAIN
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(WIDTH, HEIGHT);
+    glutCreateWindow("Tennis Game - Power Shot Edition");
+
+    init();
+
+    glutDisplayFunc(display);
+    glutKeyboardFunc(keyDown);
+    glutKeyboardUpFunc(keyUp);
+    glutSpecialFunc(specialDown);
+    glutSpecialUpFunc(specialUp);
+    glutTimerFunc(0, timer, 0);
+
+    glutMainLoop();
+    return 0;
+}
