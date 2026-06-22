@@ -33,7 +33,7 @@ void main() async {
           },
         ),
       ],
-      child: const MyApp(), // 👈 use your real app entry, not FlutApp
+      child: const MyApp(), // 
     ),
   );
 }
